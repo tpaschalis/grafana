@@ -29,7 +29,6 @@ func TestInitializer_Initialize(t *testing.T) {
 						Type: plugins.TypeDashboard,
 					},
 				},
-				Backend: true,
 			},
 			PluginDir: absCurPath,
 			Class:     plugins.Core,
@@ -59,7 +58,6 @@ func TestInitializer_Initialize(t *testing.T) {
 				Dependencies: plugins.Dependencies{
 					GrafanaVersion: ">=8.x",
 				},
-				Backend: true,
 			},
 			PluginDir: absCurPath,
 			Class:     plugins.External,
@@ -81,7 +79,7 @@ func TestInitializer_Initialize(t *testing.T) {
 		assert.NotNil(t, c)
 	})
 
-	t.Run("non backend plugin app", func(t *testing.T) {
+	t.Run("no backend factory", func(t *testing.T) {
 		p := &plugins.Plugin{
 			JSONData: plugins.JSONData{
 				ID:   "parent-plugin",
@@ -93,7 +91,6 @@ func TestInitializer_Initialize(t *testing.T) {
 						Slug:       "myCustomSlug",
 					},
 				},
-				Backend: false,
 			},
 			PluginDir: absCurPath,
 			Class:     plugins.External,
@@ -105,7 +102,7 @@ func TestInitializer_Initialize(t *testing.T) {
 			},
 			log: fakeLogger{},
 			backendProvider: &fakeBackendProvider{
-				plugin: p,
+				plugin: nil,
 			},
 		}
 
@@ -325,7 +322,10 @@ type fakeBackendProvider struct {
 }
 
 func (f *fakeBackendProvider) BackendFactory(_ context.Context, _ *plugins.Plugin) backendplugin.PluginFactoryFunc {
-	return func(_ string, _ log.Logger, _ []string) (backendplugin.Plugin, error) {
-		return f.plugin, nil
+	if f.plugin != nil {
+		return func(_ string, _ log.Logger, _ []string) (backendplugin.Plugin, error) {
+			return f.plugin, nil
+		}
 	}
+	return nil
 }

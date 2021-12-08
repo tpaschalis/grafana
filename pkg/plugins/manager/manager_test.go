@@ -27,7 +27,7 @@ const (
 
 func TestPluginManager_loadPlugins(t *testing.T) {
 	t.Run("Managed backend plugin", func(t *testing.T) {
-		p, pc := createPlugin(testPluginID, "", plugins.External, true, true)
+		p, pc := createPlugin(testPluginID, "", plugins.External, true)
 
 		loader := &fakeLoader{
 			mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -53,7 +53,7 @@ func TestPluginManager_loadPlugins(t *testing.T) {
 	})
 
 	t.Run("Unmanaged backend plugin", func(t *testing.T) {
-		p, pc := createPlugin(testPluginID, "", plugins.External, false, true)
+		p, pc := createPlugin(testPluginID, "", plugins.External, false)
 
 		loader := &fakeLoader{
 			mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -79,7 +79,7 @@ func TestPluginManager_loadPlugins(t *testing.T) {
 	})
 
 	t.Run("Managed non-backend plugin", func(t *testing.T) {
-		p, pc := createPlugin(testPluginID, "", plugins.External, false, true)
+		p, pc := createPlugin(testPluginID, "", plugins.External, false)
 
 		loader := &fakeLoader{
 			mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -105,7 +105,7 @@ func TestPluginManager_loadPlugins(t *testing.T) {
 	})
 
 	t.Run("Unmanaged non-backend plugin", func(t *testing.T) {
-		p, pc := createPlugin(testPluginID, "", plugins.External, false, false)
+		p, pc := createPlugin(testPluginID, "", plugins.External, false)
 
 		loader := &fakeLoader{
 			mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -133,7 +133,7 @@ func TestPluginManager_loadPlugins(t *testing.T) {
 
 func TestPluginManager_Installer(t *testing.T) {
 	t.Run("Install", func(t *testing.T) {
-		p, pc := createPlugin(testPluginID, "1.0.0", plugins.External, true, true)
+		p, pc := createPlugin(testPluginID, "1.0.0", plugins.External, true)
 
 		l := &fakeLoader{
 			mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -176,7 +176,7 @@ func TestPluginManager_Installer(t *testing.T) {
 		})
 
 		t.Run("Update", func(t *testing.T) {
-			p, pc := createPlugin(testPluginID, "1.2.0", plugins.External, true, true)
+			p, pc := createPlugin(testPluginID, "1.2.0", plugins.External, true)
 
 			l := &fakeLoader{
 				mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -220,7 +220,7 @@ func TestPluginManager_Installer(t *testing.T) {
 	})
 
 	t.Run("Can't update core plugin", func(t *testing.T) {
-		p, pc := createPlugin(testPluginID, "", plugins.Core, true, true)
+		p, pc := createPlugin(testPluginID, "", plugins.Core, true)
 
 		loader := &fakeLoader{
 			mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -254,7 +254,7 @@ func TestPluginManager_Installer(t *testing.T) {
 	})
 
 	t.Run("Can't update bundled plugin", func(t *testing.T) {
-		p, pc := createPlugin(testPluginID, "", plugins.Bundled, true, true)
+		p, pc := createPlugin(testPluginID, "", plugins.Bundled, true)
 
 		loader := &fakeLoader{
 			mockedLoadedPlugins: []*plugins.Plugin{p},
@@ -476,13 +476,12 @@ func createManager(t *testing.T, cbs ...func(*PluginManager)) *PluginManager {
 	return pm
 }
 
-func createPlugin(pluginID, version string, class plugins.Class, managed, backend bool) (*plugins.Plugin, *fakePluginClient) {
+func createPlugin(pluginID, version string, class plugins.Class, managed bool) (*plugins.Plugin, *fakePluginClient) {
 	p := &plugins.Plugin{
 		Class: class,
 		JSONData: plugins.JSONData{
-			ID:      pluginID,
-			Type:    plugins.DataSource,
-			Backend: backend,
+			ID:   pluginID,
+			Type: plugins.DataSource,
 			Info: plugins.Info{
 				Version: version,
 			},
@@ -532,7 +531,7 @@ func newScenario(t *testing.T, managed bool, fn func(t *testing.T, ctx *managerS
 		manager: manager,
 	}
 
-	ctx.plugin, ctx.pluginClient = createPlugin(testPluginID, "", plugins.Core, managed, true)
+	ctx.plugin, ctx.pluginClient = createPlugin(testPluginID, "", plugins.Core, managed)
 
 	fn(t, ctx)
 }
