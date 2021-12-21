@@ -3560,6 +3560,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grafana/google-sdk@portal:/Users/isabellasiu/code/grafana-google-sdk-react::locator=grafana%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@grafana/google-sdk@portal:/Users/isabellasiu/code/grafana-google-sdk-react::locator=grafana%40workspace%3A."
+  languageName: node
+  linkType: soft
+
 "@grafana/runtime@workspace:*, @grafana/runtime@workspace:packages/grafana-runtime":
   version: 0.0.0-use.local
   resolution: "@grafana/runtime@workspace:packages/grafana-runtime"
@@ -19397,6 +19403,7 @@ __metadata:
     "@grafana/e2e-selectors": "workspace:*"
     "@grafana/eslint-config": 2.5.1
     "@grafana/experimental": canary
+    "@grafana/google-sdk": 0.0.1
     "@grafana/runtime": "workspace:*"
     "@grafana/schema": "workspace:*"
     "@grafana/slate-react": 0.22.10-grafana
