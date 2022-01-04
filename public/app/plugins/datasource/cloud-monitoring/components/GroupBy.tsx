@@ -21,10 +21,10 @@ export const GroupBy: FunctionComponent<Props> = ({
   variableOptionGroup,
   metricDescriptor,
 }) => {
-  const options = useMemo(() => [variableOptionGroup, ...labelsToGroupedOptions([...groupBys, ...SYSTEM_LABELS])], [
-    groupBys,
-    variableOptionGroup,
-  ]);
+  const options = useMemo(
+    () => [variableOptionGroup, ...labelsToGroupedOptions([...groupBys, ...SYSTEM_LABELS])],
+    [groupBys, variableOptionGroup]
+  );
 
   return (
     <QueryEditorRow

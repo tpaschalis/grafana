@@ -8,7 +8,7 @@ import { NavModel } from '@grafana/data';
 import { getRouteComponentProps } from 'app/core/navigation/__mocks__/routeProps';
 
 jest.mock('app/core/config', () => ({
-  ...((jest.requireActual('app/core/config') as unknown) as object),
+  ...(jest.requireActual('app/core/config') as unknown as object),
   licenseInfo: {
     hasLicense: true,
   },

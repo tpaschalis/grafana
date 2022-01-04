@@ -142,18 +142,8 @@ export default function SpanDetail(props: SpanDetailProps) {
     isReferencesOpen,
     isStackTracesOpen,
   } = detailState;
-  const {
-    operationName,
-    process,
-    duration,
-    relativeStartTime,
-    spanID,
-    logs,
-    tags,
-    warnings,
-    references,
-    stackTraces,
-  } = span;
+  const { operationName, process, duration, relativeStartTime, spanID, logs, tags, warnings, references, stackTraces } =
+    span;
   const overviewItems = [
     {
       key: 'svc',

@@ -38,8 +38,11 @@ const AmRoutes: FC = () => {
     fetchConfig();
   }, [fetchConfig]);
 
-  const { result, loading: resultLoading, error: resultError } =
-    (alertManagerSourceName && amConfigs[alertManagerSourceName]) || initialAsyncRequestState;
+  const {
+    result,
+    loading: resultLoading,
+    error: resultError,
+  } = (alertManagerSourceName && amConfigs[alertManagerSourceName]) || initialAsyncRequestState;
 
   const config = result?.alertmanager_config;
   const [rootRoute, id2ExistingRoute] = useMemo(() => amRouteToFormAmRoute(config?.route), [config?.route]);

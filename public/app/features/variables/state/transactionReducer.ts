@@ -67,10 +67,7 @@ function actionAffectsDirtyState(action: AnyAction): boolean {
   ].includes(action.type);
 }
 
-export const {
-  variablesInitTransaction,
-  variablesClearTransaction,
-  variablesCompleteTransaction,
-} = transactionSlice.actions;
+export const { variablesInitTransaction, variablesClearTransaction, variablesCompleteTransaction } =
+  transactionSlice.actions;
 
 export const transactionReducer = transactionSlice.reducer;

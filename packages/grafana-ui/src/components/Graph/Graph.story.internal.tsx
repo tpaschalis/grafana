@@ -60,8 +60,7 @@ const series: GraphSeriesXY[] = [
     },
     valueField: {
       type: FieldType.number,
-      name:
-        "B-series with an ultra wide label that is probably going go make the tooltip overflow window. This situation happens, so let's better make sure it behaves nicely :)",
+      name: "B-series with an ultra wide label that is probably going go make the tooltip overflow window. This situation happens, so let's better make sure it behaves nicely :)",
       values: new ArrayVector([20, 30, 40]),
       config: {
         color: {

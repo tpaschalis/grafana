@@ -3,18 +3,16 @@ import { CascaderOption } from './Cascader';
 
 type onChangeType = ((values: string[], options: CascaderOption[]) => void) | undefined;
 
-export const onChangeCascader = (onChanged: onChangeType) => (
-  values: CascaderValueType,
-  options: RCCascaderOption[]
-) => {
-  if (onChanged) {
-    // map values to strings for backwards compatibility with Cascader components
-    onChanged(
-      values.map((value) => String(value)),
-      fromRCOptions(options)
-    );
-  }
-};
+export const onChangeCascader =
+  (onChanged: onChangeType) => (values: CascaderValueType, options: RCCascaderOption[]) => {
+    if (onChanged) {
+      // map values to strings for backwards compatibility with Cascader components
+      onChanged(
+        values.map((value) => String(value)),
+        fromRCOptions(options)
+      );
+    }
+  };
 
 type onLoadDataType = ((options: CascaderOption[]) => void) | undefined;
 
@@ -31,6 +29,6 @@ const fromRCOptions = (options: RCCascaderOption[]): CascaderOption[] => {
 const fromRCOption = (option: RCCascaderOption): CascaderOption => {
   return {
     value: option.value ?? '',
-    label: (option.label as unknown) as string,
+    label: option.label as unknown as string,
   };
 };
