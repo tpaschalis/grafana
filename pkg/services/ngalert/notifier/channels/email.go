@@ -80,30 +80,32 @@ func (en *EmailNotifier) Notify(ctx context.Context, as ...*types.Alert) (bool, 
 		en.log.Debug("failed to parse external URL", "url", en.tmpl.ExternalURL.String(), "err", err.Error())
 	}
 
-	cmd := &models.SendEmailCommand{
-		Subject: title,
-		Data: map[string]interface{}{
-			"Title":             title,
-			"Message":           tmpl(en.Message),
-			"Status":            data.Status,
-			"Alerts":            data.Alerts,
-			"GroupLabels":       data.GroupLabels,
-			"CommonLabels":      data.CommonLabels,
-			"CommonAnnotations": data.CommonAnnotations,
-			"ExternalURL":       data.ExternalURL,
-			"RuleUrl":           ruleURL,
-			"AlertPageUrl":      alertPageURL,
+	cmd := &models.SendEmailCommandSync{
+		SendEmailCommand: models.SendEmailCommand{
+			Subject: title,
+			Data: map[string]interface{}{
+				"Title":             title,
+				"Message":           tmpl(en.Message),
+				"Status":            data.Status,
+				"Alerts":            data.Alerts,
+				"GroupLabels":       data.GroupLabels,
+				"CommonLabels":      data.CommonLabels,
+				"CommonAnnotations": data.CommonAnnotations,
+				"ExternalURL":       data.ExternalURL,
+				"RuleUrl":           ruleURL,
+				"AlertPageUrl":      alertPageURL,
+			},
+			To:          en.Addresses,
+			SingleEmail: en.SingleEmail,
+			Template:    "ng_alert_notification",
 		},
-		To:          en.Addresses,
-		SingleEmail: en.SingleEmail,
-		Template:    "ng_alert_notification",
 	}
 
 	if tmplErr != nil {
 		en.log.Warn("failed to template email message", "err", tmplErr.Error())
 	}
 
-	if err := en.bus.DispatchCtx(ctx, cmd); err != nil {
+	if err := en.bus.Dispatch(ctx, cmd); err != nil {
 		return false, err
 	}
 

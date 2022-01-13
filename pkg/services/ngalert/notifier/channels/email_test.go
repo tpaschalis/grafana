@@ -234,7 +234,7 @@ func TestEmailNotifierIntegration(t *testing.T) {
 			require.NoError(t, err)
 			require.True(t, ok)
 
-			sentMsg := ns.MailQueuePop()
+			sentMsg := getSingleSentMessage(t, ns)
 
 			require.NotNil(t, sentMsg)
 
@@ -268,8 +268,9 @@ func createCoreEmailService(t *testing.T) (*notifications.NotificationService, *
 	cfg.Smtp.FromName = "Grafana Admin"
 	cfg.Smtp.ContentTypes = []string{"text/html", "text/plain"}
 	cfg.Smtp.Host = "localhost:1234"
+	mailer := notifications.NewFakeMailer()
 
-	ns, err := notifications.ProvideService(bus, cfg)
+	ns, err := notifications.ProvideService(bus, cfg, mailer)
 	require.NoError(t, err)
 
 	return ns, bus
@@ -279,7 +280,8 @@ func createSut(t *testing.T, messageTmpl string, emailTmpl *template.Template, b
 	t.Helper()
 
 	json := `{
-		"addresses": "someops@example.com;somedev@example.com"
+		"addresses": "someops@example.com;somedev@example.com",
+		"singleEmail": true
 	}`
 	settingsJSON, err := simplejson.NewJson([]byte(json))
 	if messageTmpl != "" {
@@ -296,4 +298,14 @@ func createSut(t *testing.T, messageTmpl string, emailTmpl *template.Template, b
 	emailNotifier.bus = bus
 
 	return emailNotifier
+}
+
+func getSingleSentMessage(t *testing.T, ns *notifications.NotificationService) *notifications.Message {
+	t.Helper()
+
+	mailer := ns.GetMailer().(*notifications.FakeMailer)
+	require.Len(t, mailer.Sent, 1)
+	sent := mailer.Sent[0]
+	mailer.Sent = []*notifications.Message{}
+	return sent
 }
