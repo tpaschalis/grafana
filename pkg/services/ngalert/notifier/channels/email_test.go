@@ -257,13 +257,12 @@ func TestEmailNotifierIntegration(t *testing.T) {
 func createCoreEmailService(t *testing.T) (*notifications.NotificationService, *bus.InProcBus) {
 	t.Helper()
 
-	setting.StaticRootPath = "../../../public/"
-	setting.BuildVersion = "4.0.0"
-
 	bus := bus.New()
 	cfg := setting.NewCfg()
+	cfg.StaticRootPath = "../../../../../public/"
+	cfg.BuildVersion = "4.0.0"
 	cfg.Smtp.Enabled = true
-	cfg.Smtp.TemplatesPatterns = []string{"../../../../../public/emails/*.html", "../../../../../public/emails/*.txt"}
+	cfg.Smtp.TemplatesPatterns = []string{"emails/*.html", "emails/*.txt"}
 	cfg.Smtp.FromAddress = "from@address.com"
 	cfg.Smtp.FromName = "Grafana Admin"
 	cfg.Smtp.ContentTypes = []string{"text/html", "text/plain"}
