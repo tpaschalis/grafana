@@ -4,7 +4,7 @@ import { TeamMember, ThunkResult } from 'app/types';
 import { updateNavIndex } from 'app/core/actions';
 import { buildNavModel } from './navModel';
 import { teamGroupsLoaded, teamLoaded, teamMembersLoaded, teamsLoaded } from './reducers';
-import { addAccessControlQueryParam } from 'app/core/utils/accessControl';
+import { accessControlQueryParam } from 'app/core/utils/accessControl';
 
 export function loadTeams(): ThunkResult<void> {
   return async (dispatch) => {
@@ -15,7 +15,7 @@ export function loadTeams(): ThunkResult<void> {
 
 export function loadTeam(id: number): ThunkResult<void> {
   return async (dispatch) => {
-    const response = await getBackendSrv().get(addAccessControlQueryParam(`/api/teams/${id}`));
+    const response = await getBackendSrv().get(`/api/teams/${id}`, accessControlQueryParam());
     dispatch(teamLoaded(response));
     dispatch(updateNavIndex(buildNavModel(response)));
   };
