@@ -8,7 +8,10 @@ import { accessControlQueryParam } from 'app/core/utils/accessControl';
 
 export function loadTeams(): ThunkResult<void> {
   return async (dispatch) => {
-    const response = await getBackendSrv().get('/api/teams/search', { perpage: 1000, page: 1 });
+    const response = await getBackendSrv().get(
+      '/api/teams/search',
+      accessControlQueryParam({ perpage: 1000, page: 1 })
+    );
     dispatch(teamsLoaded(response.teams));
   };
 }
