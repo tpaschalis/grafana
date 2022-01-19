@@ -152,13 +152,13 @@ func (hs *HTTPServer) SearchTeams(c *models.ReqContext) response.Response {
 	teamIDs := map[string]bool{}
 	for _, team := range query.Result.Teams {
 		team.AvatarUrl = dtos.GetGravatarUrlWithDefault(team.Email, team.Name)
-		teamIDs[strconv.FormatInt(team.Id, 64)] = true
+		teamIDs[strconv.FormatInt(team.Id, 10)] = true
 	}
 
 	metadata, err := hs.getTeamsAccessControlMetadata(c, teamIDs)
 	if err == nil && len(metadata) != 0 {
 		for _, team := range query.Result.Teams {
-			team.AccessControl = metadata[strconv.FormatInt(team.Id, 64)]
+			team.AccessControl = metadata[strconv.FormatInt(team.Id, 10)]
 		}
 	}
 
