@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ExploreId, ExploreQueryParams } from 'app/types/explore';
 import { ErrorBoundaryAlert } from '@grafana/ui';
 import { lastSavedUrl, resetExploreAction, richHistoryUpdatedAction } from './state/main';
@@ -14,69 +14,62 @@ import { StoreState } from 'app/types';
 interface RouteProps extends GrafanaRouteComponentProps<{}, ExploreQueryParams> {}
 interface OwnProps {}
 
-const mapStateToProps = (state: StoreState) => {
-  return {
-    navModel: getNavModel(state.navIndex, 'explore'),
-    exploreState: state.explore,
-  };
-};
+type Props = OwnProps & RouteProps;
 
-const mapDispatchToProps = {
-  resetExploreAction,
-  richHistoryUpdatedAction,
-};
+const useExploreTitle = () => {
+  const navModel = useSelector((state: StoreState) => getNavModel(state.navIndex, 'explore'));
+  const exploreTitle = useSelector((state: StoreState) =>
+    [state.explore.left.datasourceInstance?.name, state.explore.right?.datasourceInstance?.name]
+      .filter(Boolean)
+      .join(' | ')
+  );
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-type Props = OwnProps & RouteProps & ConnectedProps<typeof connector>;
-class WrapperUnconnected extends PureComponent<Props> {
-  componentWillUnmount() {
-    this.props.resetExploreAction({});
+  if (exploreTitle) {
+    document.title = `${navModel.main.text} - ${exploreTitle} - ${Branding.AppTitle}`;
   }
+};
 
-  componentDidMount() {
+const useRichHistoryUpdater = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const richHistory = getRichHistory();
+    dispatch(richHistoryUpdatedAction({ richHistory }));
+
+    return () => {
+      dispatch(resetExploreAction({}));
+    };
+  }, [dispatch]);
+};
+
+const Wrapper = (props: Props) => {
+  useExploreTitle();
+  useRichHistoryUpdater();
+
+  useEffect(() => {
     lastSavedUrl.left = undefined;
     lastSavedUrl.right = undefined;
+  }, []);
 
-    const richHistory = getRichHistory();
-    this.props.richHistoryUpdatedAction({ richHistory });
-  }
+  const { state } = props.queryParams;
+  const { left, right } = JSON.parse(state || '{}');
 
-  componentDidUpdate(prevProps: Props) {
-    const { state } = this.props.queryParams;
-    const { left, right } = JSON.parse(state || '{}');
+  const hasSplit = Boolean(left) && Boolean(right);
 
-    const hasSplit = Boolean(left) && Boolean(right);
-    const datasourceTitle = hasSplit
-      ? `${this.props.exploreState.left.datasourceInstance?.name} | ${this.props.exploreState.right?.datasourceInstance?.name}`
-      : `${this.props.exploreState.left.datasourceInstance?.name}`;
-    const documentTitle = `${this.props.navModel.main.text} - ${datasourceTitle} - ${Branding.AppTitle}`;
-    document.title = documentTitle;
-  }
-
-  render() {
-    const { state } = this.props.queryParams;
-    const { left, right } = JSON.parse(state || '{}');
-
-    const hasSplit = Boolean(left) && Boolean(right);
-
-    return (
-      <div className="page-scrollbar-wrapper">
-        <div className="explore-wrapper">
+  return (
+    <div className="page-scrollbar-wrapper">
+      <div className="explore-wrapper">
+        <ErrorBoundaryAlert style="page">
+          <ExplorePaneContainer split={hasSplit} exploreId={ExploreId.left} urlQuery={JSON.stringify(left)} />
+        </ErrorBoundaryAlert>
+        {hasSplit && (
           <ErrorBoundaryAlert style="page">
-            <ExplorePaneContainer split={hasSplit} exploreId={ExploreId.left} urlQuery={JSON.stringify(left)} />
+            <ExplorePaneContainer split={hasSplit} exploreId={ExploreId.right} urlQuery={JSON.stringify(right)} />
           </ErrorBoundaryAlert>
-          {hasSplit && (
-            <ErrorBoundaryAlert style="page">
-              <ExplorePaneContainer split={hasSplit} exploreId={ExploreId.right} urlQuery={JSON.stringify(right)} />
-            </ErrorBoundaryAlert>
-          )}
-        </div>
+        )}
       </div>
-    );
-  }
-}
-
-const Wrapper = connector(WrapperUnconnected);
+    </div>
+  );
+};
 
 export default Wrapper;
