@@ -1,6 +1,7 @@
-import { Team, TeamPermissionLevel } from 'app/types';
+import { AccessControlAction, Team, TeamPermissionLevel } from 'app/types';
 import { featureEnabled } from '@grafana/runtime';
 import { NavModelItem, NavModel } from '@grafana/data';
+import { contextSrv } from 'app/core/core';
 
 export function buildNavModel(team: Team): NavModelItem {
   const navModel = {
@@ -10,23 +11,28 @@ export function buildNavModel(team: Team): NavModelItem {
     url: '',
     text: team.name,
     breadcrumbs: [{ title: 'Teams', url: 'org/teams' }],
-    children: [
-      {
-        active: false,
-        icon: 'users-alt',
-        id: `team-members-${team.id}`,
-        text: 'Members',
-        url: `org/teams/edit/${team.id}/members`,
-      },
-      {
-        active: false,
-        icon: 'sliders-v-alt',
-        id: `team-settings-${team.id}`,
-        text: 'Settings',
-        url: `org/teams/edit/${team.id}/settings`,
-      },
-    ],
+    children: [] as NavModelItem[],
   };
+
+  if (contextSrv.hasPermissionInMetadata(AccessControlAction.ActionTeamsPermissionsRead, team)) {
+    navModel.children.push({
+      active: false,
+      icon: 'users-alt',
+      id: `team-members-${team.id}`,
+      text: 'Members',
+      url: `org/teams/edit/${team.id}/members`,
+    });
+  }
+
+  // With FGAC this tab will always be available
+  // With Legacy it will be hidden should the user not see it
+  navModel.children.push({
+    active: false,
+    icon: 'sliders-v-alt',
+    id: `team-settings-${team.id}`,
+    text: 'Settings',
+    url: `org/teams/edit/${team.id}/settings`,
+  });
 
   if (featureEnabled('teamsync')) {
     navModel.children.push({

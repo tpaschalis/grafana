@@ -7,7 +7,7 @@ import TeamMembers from './TeamMembers';
 import TeamPermissions from './TeamPermissions';
 import TeamSettings from './TeamSettings';
 import TeamGroupSync from './TeamGroupSync';
-import { StoreState } from 'app/types';
+import { AccessControlAction, StoreState } from 'app/types';
 import { loadTeam, loadTeamMembers } from './state/actions';
 import { getTeam, getTeamMembers, isSignedInUserTeamAdmin } from './state/selectors';
 import { getTeamLoadingNav } from './state/navModel';
@@ -37,10 +37,17 @@ enum PageTypes {
 
 function mapStateToProps(state: StoreState, props: OwnProps) {
   const teamId = parseInt(props.match.params.id, 10);
-  const pageName = props.match.params.page ?? 'members';
+  const team = getTeam(state.team, teamId);
+  let defaultPage = 'members';
+  if (contextSrv.accessControlEnabled()) {
+    // With FGAC the settings page will always be available
+    if (!team || !contextSrv.hasPermissionInMetadata(AccessControlAction.ActionTeamsPermissionsRead, team)) {
+      defaultPage = 'settings';
+    }
+  }
+  const pageName = props.match.params.page ?? defaultPage;
   const teamLoadingNav = getTeamLoadingNav(pageName as string);
   const navModel = getNavModel(state.navIndex, `team-${pageName}-${teamId}`, teamLoadingNav);
-  const team = getTeam(state.team, teamId);
   const members = getTeamMembers(state.team);
 
   return {
@@ -90,7 +97,6 @@ export class TeamPages extends PureComponent<Props, State> {
   }
 
   getCurrentPage() {
-    // const pages = filterPagesWithAccessControl(this.props.team);
     const pages = ['members', 'settings', 'groupsync'];
     const currentPage = this.props.pageName;
     return includes(pages, currentPage) ? currentPage : pages[0];
@@ -109,6 +115,10 @@ export class TeamPages extends PureComponent<Props, State> {
   };
 
   hideTabsFromNonTeamAdmin = (navModel: NavModel, isSignedInUserTeamAdmin: boolean) => {
+    if (contextSrv.accessControlEnabled()) {
+      return navModel;
+    }
+
     if (!isSignedInUserTeamAdmin && navModel.main && navModel.main.children) {
       navModel.main.children
         .filter((navItem) => !this.textsAreEqual(navItem.text, PageTypes.Members))

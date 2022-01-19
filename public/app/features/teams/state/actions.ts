@@ -16,8 +16,8 @@ export function loadTeams(): ThunkResult<void> {
 export function loadTeam(id: number): ThunkResult<void> {
   return async (dispatch) => {
     const response = await getBackendSrv().get(`/api/teams/${id}`, accessControlQueryParam());
-    dispatch(teamLoaded(response));
     dispatch(updateNavIndex(buildNavModel(response)));
+    dispatch(teamLoaded(response));
   };
 }
 
