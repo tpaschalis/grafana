@@ -218,7 +218,6 @@ export function getAppRoutes(): RouteDescriptor[] {
         contextSrv.evaluatePermission(() => (config.editorsCanAdmin ? [] : ['Editor', 'Admin']), [
           AccessControlAction.ActionTeamsWrite,
           AccessControlAction.ActionTeamsPermissionsWrite,
-          AccessControlAction.ActionTeamsPreferencesWrite,
         ]),
       component: SafeDynamicImport(() => import(/* webpackChunkName: "TeamPages" */ 'app/features/teams/TeamPages')),
     },
