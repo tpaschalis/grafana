@@ -206,7 +206,7 @@ func (hs *HTTPServer) GetTeamByID(c *models.ReqContext) response.Response {
 		return response.Error(500, "Failed to get Team", err)
 	}
 
-	metadata, err := hs.getTeamAccessControlMetadata(c, query.Result.Id)
+	metadata, _ := hs.getTeamAccessControlMetadata(c, query.Result.Id)
 	query.Result.AccessControl = metadata
 
 	query.Result.AvatarUrl = dtos.GetGravatarUrlWithDefault(query.Result.Email, query.Result.Name)
