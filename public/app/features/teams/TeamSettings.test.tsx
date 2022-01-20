@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Props, TeamSettings } from './TeamSettings';
 import { getMockTeam } from './__mocks__/teamMocks';
 
-jest.mock('app/core/core/context_srv', () => ({
+jest.mock('app/core/core', () => ({
   contextSrv: {
     hasPermissionInMetadata: () => true,
   },
