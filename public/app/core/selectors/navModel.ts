@@ -42,7 +42,6 @@ export const getNavModel = (navIndex: NavIndex, id: string, fallback?: NavModel,
   }
 
   if (fallback) {
-    console.log('Using fallback');
     return fallback;
   }
 
