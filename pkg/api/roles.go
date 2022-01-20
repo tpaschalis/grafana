@@ -278,6 +278,5 @@ var teamsAccessEvaluator = accesscontrol.EvalAll(
 	accesscontrol.EvalAny(
 		accesscontrol.EvalPermission(ActionTeamsWrite),
 		accesscontrol.EvalPermission(ActionTeamsPermissionsWrite),
-		accesscontrol.EvalPermission(ActionTeamsPreferencesWrite),
 	),
 )
