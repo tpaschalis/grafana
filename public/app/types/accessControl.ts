@@ -55,8 +55,6 @@ export enum AccessControlAction {
   ActionTeamsWrite = 'teams:write',
   ActionTeamsPermissionsRead = 'teams.permissions:read',
   ActionTeamsPermissionsWrite = 'teams.permissions:write',
-  ActionTeamsPreferencesRead = 'teams.permissions:read',
-  ActionTeamsPreferencesWrite = 'teams.permissions:write',
 }
 
 export interface Role {
